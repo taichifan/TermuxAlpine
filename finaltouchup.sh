@@ -30,14 +30,12 @@ addmotd() {
 }
 
 updrepos() {
-	echo undo updating repositories
 	cp $HOME/TermuxAlpine/etc/apk/repositories $HOME/TermuxAlpine/etc/apk/repositories.bak
 	cat > $HOME/TermuxAlpine/etc/apk/repositories <<- EOM
 	http://dl-cdn.alpinelinux.org/alpine/latest-stable/main/
 	http://dl-cdn.alpinelinux.org/alpine/latest-stable/community/
 	http://dl-cdn.alpinelinux.org/alpine/edge/testing/
 	EOM
-	cat $HOME/TermuxAlpine/etc/apk/repositories
 }
 
 addresolvconf ()

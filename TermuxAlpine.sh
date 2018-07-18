@@ -25,7 +25,7 @@ unknownarch() {
 	printf "$red"
 	echo "[*] Unknown Architecture :("
 	printf "$reset"
-	exit
+	exit 1
 }
 
 # Utility function for detect system
@@ -81,7 +81,6 @@ seturl() {
 	if [ -z "$ALPINE_VER" ] ; then
 		exit 1
 	fi
-	echo $ALPINE_VER
 	ALPINE_URL="http://dl-cdn.alpinelinux.org/alpine/latest-stable/releases/$SETARCH/alpine-minirootfs-$ALPINE_VER-$SETARCH.tar.gz"
 }
 
@@ -118,8 +117,6 @@ checkintegrity() {
 extract() {
 	printf "$blue [*] Extracting... $reset\n\n"
 	proot --link2symlink -0 bsdtar -xpf $rootfs 2> /dev/null || :
-	pwd
-	ls -ld *
 }
 
 # Utility function for login file
@@ -167,6 +164,11 @@ printline() {
 	echo " #-----------------------------------------------#"
 }
 
+usage() {
+	printf "$red Must be bash TermuxAlpine.sh [uninstall] or [--termuxalpine-dir (git dir of TermuxAlpine)]\n"
+	exit 1
+}
+
 # Start
 clear
 EXTRAARGS="default"
@@ -182,13 +184,16 @@ then
 elif [[ $EXTRAARGS = "--termuxalpine-dir" ]]
 then
 	FINALDIR="$1"
+elif ( $# -ge 1 )
+then
+	usage
 else
 	FINALDIR="$HOME"
 fi
 printf "\n${yellow} You are going to install Alpine in termux ;) Cool\n Only 1mb Yes to continue?"
 read resp
 if [ "$resp" != "Yes" ] ; then
-	echo "Must choose Yes to install. Exiting."
+	printf "$red Must choose Yes to install. Exiting.\n"
 	exit 1
 fi
 

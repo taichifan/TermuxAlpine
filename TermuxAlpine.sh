@@ -184,6 +184,11 @@ then
 elif [[ $EXTRAARGS = "--termuxalpine-dir" ]]
 then
 	FINALDIR="$1"
+	if [ ! -d $FINALDIR ]
+	then
+		printf "$red Directory doesn't exist or isn't a directory $FINALDIR. Exiting.\n"
+		exit 1
+	fi
 elif ( $# -ge 1 )
 then
 	usage

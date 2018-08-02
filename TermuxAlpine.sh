@@ -126,6 +126,12 @@ createloginfile() {
 	cat > $bin <<- EOM
 #!/data/data/com.termux/files/usr/bin/bash -e
 unset LD_PRELOAD
+# thnx to @j16180339887 for DNS picker
+addresolvconf ()
+{ 
+  [ $(command -v getprop) ] && getprop | sed -n -e 's/^\[net\.dns.\]: \[\(.*\)\]/\1/p' | sed '/^\s*$/d' | sed 's/^/nameserver /' > $HOME/TermuxAlpine/etc/resolv.conf
+}
+addresolvconf
 exec proot --link2symlink -0 -r ${HOME}/TermuxAlpine/ -b /dev/ -b /sys/ -b /proc/ -b /storage/ -b $HOME -w $HOME /usr/bin/env -i HOME=/root TERM="$TERM" LANG=$LANG PATH=/bin:/usr/bin:/sbin:/usr/sbin /bin/sh --login
 EOM
 
@@ -135,8 +141,8 @@ EOM
 # Utility function to touchup Alpine
 
 finalwork() {
-	[ ! -e ${FINALDIR}/finaltouchup.sh ] && curl --silent -LO https://raw.githubusercontent.com/Hax4us/TermuxAlpine/master/finaltouchup.sh
-chmod +x ${FINALDIR}/finaltouchup.sh && ${FINALDIR}/finaltouchup.sh
+	[ ! -e ${HOME}/finaltouchup.sh ] && curl --silent -LO https://raw.githubusercontent.com/Hax4us/TermuxAlpine/master/finaltouchup.sh
+chmod +x ${HOME}/finaltouchup.sh && ${HOME}/finaltouchup.sh
 }
 
 
@@ -161,7 +167,12 @@ cleanup() {
 
 printline() {
 	printf "${blue}\n"
-	echo " #-----------------------------------------------#"
+	echo " #------------------------------------------#"
+}
+
+usage() {
+	printf "$red use ${yellow}bash TermuxAlpine.sh --uninstall\n"
+	exit 1
 }
 
 usage() {
@@ -175,32 +186,17 @@ EXTRAARGS="default"
 if [[ ! -z "$1" ]]
 	then
 	EXTRAARGS=$1
-	shift 1
 fi
-if [[ $EXTRAARGS = "uninstall" ]]
+if [[ $EXTRAARGS = "--uninstall" ]]
 then
 	cleanup
 	exit
-elif [[ $EXTRAARGS = "--termuxalpine-dir" ]]
-then
-	FINALDIR="$1"
-	if [ ! -d $FINALDIR ]
-	then
-		printf "$red Directory doesn't exist or isn't a directory $FINALDIR. Exiting.\n"
-		exit 1
-	fi
-elif ( $# -ge 1 )
+
+elif [ $# -ge 1 ]
 then
 	usage
 else
-	FINALDIR="$HOME"
-fi
-printf "\n${yellow} You are going to install Alpine in termux ;) Cool\n Only 1mb Yes to continue?"
-read resp
-if [ "$resp" != "Yes" ] ; then
-	printf "$red Must choose Yes to install. Exiting.\n"
-	exit 1
-fi
+printf "\n${yellow} You are going to install Alpine in termux ;) Cool\n Only 1mb Yes to continue\n\n"
 
 checksysinfo
 checkdeps
@@ -217,8 +213,11 @@ printline
 printf "\n${yellow} Now you can enjoy a very small (just 1 MB!) Linux environment in your Termux :)\n Don't forget to like my hard work for termux and many other things\n"
 printline
 printline
-printf "\n${blue} [âˆ†] My official email:${yellow}		lokesh@hax4us.com\n"
-printf "$blue [âˆ†] My website:${yellow}		https://hax4us.com\n"
-printf "$blue [âˆ†] My YouTube channel:${yellow}	https://youtube.com/hax4us\n"
+printf "\n${blue} [â] Email   :${yellow}    lkpandey950@gmail.com\n"
+printf "$blue [â] Website :${yellow}    https://hax4us.com\n"
+printf "$blue [â] YouTube :${yellow}    https://youtube.com/hax4us\n"
+printline
+printf "$red \n NOTE : $yellow use ${red}--uninstall${yellow} option for uninstall\n"
 printline
 printf "$reset"
+fi

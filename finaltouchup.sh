@@ -37,16 +37,13 @@ updrepos() {
 	http://dl-cdn.alpinelinux.org/alpine/edge/testing/
 	EOM
 }
-
-addresolvconf ()
-{
-	cat > $HOME/TermuxAlpine/etc/resolv.conf <<- EOM
-	nameserver 8.8.8.8
-	nameserver 8.8.4.4
-	EOM
-}
+# thnx to @j16180339887 for DNS picker 
+#addresolvconf ()
+#{
+#	[ $(command -v getprop) ] && getprop | sed -n -e 's/^\[net\.dns.\]: \[\(.*\)\]/\1/p' | sed '/^\s*$/d' | sed 's/^/nameserver /' > $HOME/TermuxAlpine/etc/resolv.conf
+#}
 
 addprofile
 addmotd
-addresolvconf
+#addresolvconf
 updrepos
